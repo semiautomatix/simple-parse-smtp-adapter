@@ -18,8 +18,10 @@ let SimpleParseSmtpAdapter = (adapterOptions) => {
         }
     }
     else if(!adapterOptions && adapterOptions.service=='SMTP'){
-            if (!adapterOptions || !adapterOptions.user || !adapterOptions.password || !adapterOptions.host || !adapterOptions.fromAddress ) {
-                throw 'SimpleParseSMTPAdapter requires user, password, host, and fromAddress';
+			// TG removed username and password as requirements
+            //if (!adapterOptions || !adapterOptions.user || !adapterOptions.password || !adapterOptions.host || !adapterOptions.fromAddress ) {
+			if (!adapterOptions || !adapterOptions.host || !adapterOptions.fromAddress ) {				
+                throw 'SimpleParseSMTPAdapter requires host, and fromAddress';
             }
     }else{
             throw 'SimpleParseSMTPAdapter please choose service Gmail or SMTP';
@@ -44,15 +46,21 @@ let SimpleParseSmtpAdapter = (adapterOptions) => {
     /**
      * Creates trasporter for send emails with OAuth2 Gmail
      */
-     let transporter = nodemailer.createTransport({
+	// TG removed username and password as requirements
+	if 	(!adapterOptions.user && !adapterOptions.password) {
+		let auth = null;
+		auth = {
+			user: adapterOptions.user,
+			pass: adapterOptions.password
+		}	
+	}	
+		
+    let transporter = nodemailer.createTransport({
         host: adapterOptions.host,
         port: adapterOptions.port,
         secure: adapterOptions.isSSL,
         name: adapterOptions.name || '127.0.0.1',
-        auth: {
-            user: adapterOptions.user,
-            pass: adapterOptions.password
-        },
+        auth,
         tls: {
             rejectUnauthorized: adapterOptions.isTlsRejectUnauthorized !== undefined ? adapterOptions.isTlsRejectUnauthorized : true
         }
@@ -108,7 +116,8 @@ let SimpleParseSmtpAdapter = (adapterOptions) => {
             to: mail.to,
             html: mail.text,
             subject: mail.subject,
-            from: adapterOptions.fromAddress
+            from: adapterOptions.fromAddress,
+			attachments: mail.attachments // TG add option for attachments
         };
 
         return new Promise((resolve, reject) => {
