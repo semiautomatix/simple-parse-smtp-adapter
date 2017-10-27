@@ -4,8 +4,7 @@ const nodemailer = require("nodemailer");
 const EmailTemplate = require('email-templates').EmailTemplate;
 
 let SimpleParseSmtpAdapter = (adapterOptions) => {
-
-    if(!adapterOptions && adapterOptions.service=='Gmail'){
+    if(adapterOptions && adapterOptions.service=='Gmail'){
         if (!adapterOptions ||  
             !adapterOptions.service|| 
             !adapterOptions.type ||  
@@ -17,7 +16,7 @@ let SimpleParseSmtpAdapter = (adapterOptions) => {
             throw 'SimpleParseSMTPAdapter requires service,type, user, clientId,clientSecret,refreshToken and accessToken';
         }
     }
-    else if(!adapterOptions && adapterOptions.service=='SMTP'){
+    else if(adapterOptions && adapterOptions.service=='SMTP'){
 			// TG removed username and password as requirements
             //if (!adapterOptions || !adapterOptions.user || !adapterOptions.password || !adapterOptions.host || !adapterOptions.fromAddress ) {
 			if (!adapterOptions || !adapterOptions.host || !adapterOptions.fromAddress ) {				
@@ -47,8 +46,8 @@ let SimpleParseSmtpAdapter = (adapterOptions) => {
      * Creates trasporter for send emails with OAuth2 Gmail
      */
 	// TG removed username and password as requirements
-	if 	(!adapterOptions.user && !adapterOptions.password) {
-		let auth = null;
+	let auth = null;
+	if 	(adapterOptions.user && adapterOptions.password) {
 		auth = {
 			user: adapterOptions.user,
 			pass: adapterOptions.password
